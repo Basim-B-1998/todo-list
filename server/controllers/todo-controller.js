@@ -4,13 +4,9 @@ import Todo from '../models/Todo.js';
 export const createTodo = async (req, res) => { 
   try {
     const { title, description,status } = req.body;
-    const newlyCreatedTodo = new Todo({ title, description });
+    const newlyCreatedTodo = new Todo({ title, description,status });
     await newlyCreatedTodo.save();
-    res.status(201).json({
-      success: true,
-      message: "Todo created",
-      data: newlyCreatedTodo
-  });
+    res.status(201).json(newlyCreatedTodo)
   } catch (error) {
     res.status(500).json({ 
     message: "Error occured"});
@@ -20,11 +16,7 @@ export const createTodo = async (req, res) => {
 export const fetchTodo = async (req, res) => {
   try {
     const todos = await Todo.find({});
-     res.status(200).json({
-      success: true,
-      message: "Todos fetched successfully",
-      data: todos,
-    });
+     res.status(200).json(todos)
   } catch (e) {
     console.log(e);
     res.status(500).json({
@@ -49,11 +41,7 @@ export const editTodo = async (req, res) => {
     todo.description = description;
     todo.status = status;
     await todo.save();
-    res.status(200).json({
-      success: true,
-      message: "Todo updated successfully",
-      data: todo
-    });
+    res.status(200).json(todo)
   }catch(e){
     console.log(e);
     res.status(500).json({  
