@@ -4,12 +4,14 @@ import { useState, useEffect } from "react";
 import { fetchTodosApi, createTodoApi, deleteTodoApi, editTodoApi } from "../apis/todoServices.js";
 import TodoForm from "./components/todo-form.js";
 import TodoList from "./components/todo-list.js";
+import Loading from "./components/loading.js";
 
 export default function TodoApp() {
   const [todo, setTodo] = useState("");
   const [status, setStatus] = useState("PENDING");
   const [todos, setTodos] = useState([]);
   const [editId, setEditId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const loadTodos = async () => {
     const data = await fetchTodosApi();
@@ -22,13 +24,17 @@ export default function TodoApp() {
         await loadTodos();
       } catch (err) {
         console.error("Error loading todos:", err);
-      } 
+      } finally {
+        setLoading(false);
+      }
     };
 
     getTodos();
   }, []);
 
-
+   if (loading) {
+    return <Loading/>;
+  }
 
   const handleAdd = async (e) => {
     e.preventDefault();
