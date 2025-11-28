@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connect from './db/index.js';
+import todoRoutes from './routes/todo-routes.js';
 
 const app = express();
 
@@ -10,6 +11,7 @@ connect()
 
 app.use(cors());
 app.use(express.json());
+app.use('/api', todoRoutes);
 
 const PORT = process.env.PORT || 5000;
 
