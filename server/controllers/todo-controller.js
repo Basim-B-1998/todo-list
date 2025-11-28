@@ -16,3 +16,20 @@ export const createTodo = async (req, res) => {
     message: "Error occured"});
   }
 }
+
+export const fetchTodo = async (req, res) => {
+  try {
+    const todos = await Todo.find({});
+     res.status(200).json({
+      success: true,
+      message: "Todos fetched successfully",
+      data: todos,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Error occured",
+    });
+  }
+};
