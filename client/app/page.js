@@ -5,6 +5,7 @@ import { fetchTodosApi, createTodoApi, deleteTodoApi, editTodoApi } from "../api
 import TodoForm from "./components/todo-form.js";
 import TodoList from "./components/todo-list.js";
 import Loading from "./components/loading.js";
+import Pagination from "./components/pagination.js";
 
 export default function TodoApp() {
   const [todo, setTodo] = useState("");
@@ -12,6 +13,8 @@ export default function TodoApp() {
   const [todos, setTodos] = useState([]);
   const [editId, setEditId] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [page, setPage] = useState(1);
 
   const loadTodos = async () => {
     const data = await fetchTodosApi();
@@ -21,7 +24,7 @@ export default function TodoApp() {
   useEffect(() => {
     const getTodos = async () => {
       try {
-        await loadTodos();
+        await loadTodos();  
       } catch (err) {
         console.error("Error loading todos:", err);
       } finally {
@@ -32,28 +35,20 @@ export default function TodoApp() {
     getTodos();
   }, []);
 
-   if (loading) {
-    return <Loading/>;
-  }
+  if (loading) return <Loading />;
 
   const handleAdd = async (e) => {
     e.preventDefault();
 
     if (editId) {
       const updated = await editTodoApi(editId, { title: todo, status });
-      setTodos((prev) =>
-        prev.map((t) => (t._id === editId ? updated : t))
-      );
+      setTodos((prev) => prev.map((t) => (t._id === editId ? updated : t)));
       resetForm();
       return;
     }
 
-    if (todo.trim() !== "") {
-      const newTodo = await createTodoApi({
-        title: todo,
-        status,
-      });
-
+    if (todo.trim()) {
+      const newTodo = await createTodoApi({ title: todo, status });
       setTodos((prev) => [newTodo, ...prev]);
       resetForm();
     }
@@ -76,6 +71,9 @@ export default function TodoApp() {
     setEditId(todoObj._id);
   };
 
+ 
+  const currentPageTodos = todos.slice(page * 4 - 4, page * 4);
+
   return (
     <div className="flex flex-col items-center mt-20">
       <div className="text-3xl font-bold">TODO APP</div>
@@ -88,11 +86,17 @@ export default function TodoApp() {
         editId={editId}
         handleAdd={handleAdd}
       />
-      
+
       <TodoList
-        todos={todos}
+        todos={currentPageTodos}
         handleEdit={handleEdit}
         handleDelete={handleDelete}
+      />
+
+      <Pagination
+        totalItems={todos.length}
+        page={page}
+        onPageChange={setPage}
       />
     </div>
   );
